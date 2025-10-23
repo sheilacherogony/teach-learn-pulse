@@ -1,44 +1,90 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCap, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState<string>("teacher");
+  const [role, setRole] = useState("teacher");
+  const [teachers, setTeachers] = useState([]);
+  const [teacherDetails, setTeacherDetails] = useState({
+    tscNumber: "",
+    firstName: "",
+    lastName: "",
+  });
   const [tscAutoFilled, setTscAutoFilled] = useState(false);
 
-  const handleSignIn = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Fetch mock teacher data from db.json
+    const fetchTeachers = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/teachers");
+        const data = await res.json();
+        setTeachers(data);
+      } catch (err) {
+        toast.error("Failed to load teacher data");
+      }
+    };
+    fetchTeachers();
+  }, []);
+
+  const handleSignIn = (e) => {
     e.preventDefault();
     toast.success("Signed in successfully!");
-    
     if (role === "teacher") navigate("/teacher");
     else if (role === "parent") navigate("/parent");
     else if (role === "admin") navigate("/headteacher");
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
     toast.success("Account created successfully!");
-    
     if (role === "teacher") navigate("/teacher");
     else if (role === "parent") navigate("/parent");
     else if (role === "admin") navigate("/headteacher");
   };
 
-  const handleTscNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTscNumberChange = (e) => {
     const value = e.target.value;
-    if (value.length >= 6) {
+    setTeacherDetails((prev) => ({ ...prev, tscNumber: value }));
+
+    // Find teacher in the mock DB
+    const foundTeacher = teachers.find(
+      (t) => t.tscNumber.toLowerCase() === value.toLowerCase()
+    );
+
+    if (foundTeacher) {
+      // Split teacher's name into first and last for display
+      const [firstName, ...rest] = foundTeacher.name.split(" ");
+      const lastName = rest.join(" ");
+      setTeacherDetails({
+        tscNumber: foundTeacher.tscNumber,
+        firstName,
+        lastName,
+      });
       setTscAutoFilled(true);
-      toast.success("Teacher details auto-filled!");
+      toast.success(`Details auto-filled for ${foundTeacher.name}`);
     } else {
       setTscAutoFilled(false);
+      setTeacherDetails({ tscNumber: value, firstName: "", lastName: "" });
     }
   };
 
@@ -52,8 +98,11 @@ const Auth = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">EduTrack</CardTitle>
-          <CardDescription>School Monitoring & Progress System</CardDescription>
+          <CardDescription>
+            School Monitoring & Progress System
+          </CardDescription>
         </CardHeader>
+
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -61,13 +110,14 @@ const Auth = () => {
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
 
+            {/* --- Sign In Form --- */}
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-role">Sign in as</Label>
                   <Select value={role} onValueChange={setRole}>
                     <SelectTrigger id="signin-role">
-                      <SelectValue />
+                      <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="teacher">Teacher</SelectItem>
@@ -76,25 +126,31 @@ const Auth = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="you@school.edu" required />
+                  <Input id="email" type="email" required />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <Input id="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full">Sign In</Button>
+
+                <Button type="submit" className="w-full">
+                  Sign In
+                </Button>
               </form>
             </TabsContent>
 
+            {/* --- Sign Up Form --- */}
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-role">Register as</Label>
                   <Select value={role} onValueChange={setRole}>
                     <SelectTrigger id="signup-role">
-                      <SelectValue />
+                      <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="teacher">Teacher</SelectItem>
@@ -104,46 +160,51 @@ const Auth = () => {
                   </Select>
                 </div>
 
+                {/* --- Teacher Signup Section --- */}
                 {role === "teacher" && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="tsc">TSC Number</Label>
                       <div className="relative">
-                        <Input 
-                          id="tsc" 
-                          type="text" 
-                          placeholder="123456" 
+                        <Input
+                          id="tsc"
+                          type="text"
+                          placeholder="TSC-123456"
+                          value={teacherDetails.tscNumber}
                           onChange={handleTscNumberChange}
-                          required 
+                          required
                         />
                         {tscAutoFilled && (
                           <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-success" />
                         )}
                       </div>
                     </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="first-name">First Name</Label>
-                      <Input 
-                        id="first-name" 
-                        type="text" 
-                        value={tscAutoFilled ? "John" : ""} 
+                      <Input
+                        id="first-name"
+                        type="text"
+                        value={teacherDetails.firstName}
                         disabled={tscAutoFilled}
-                        required 
+                        required
                       />
                     </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="last-name">Last Name</Label>
-                      <Input 
-                        id="last-name" 
-                        type="text" 
-                        value={tscAutoFilled ? "Doe" : ""} 
+                      <Input
+                        id="last-name"
+                        type="text"
+                        value={teacherDetails.lastName}
                         disabled={tscAutoFilled}
-                        required 
+                        required
                       />
                     </div>
                   </>
                 )}
 
+                {/* --- Parent Signup Section --- */}
                 {role === "parent" && (
                   <>
                     <div className="space-y-2">
@@ -165,6 +226,7 @@ const Auth = () => {
                   </>
                 )}
 
+                {/* --- Admin Signup Section --- */}
                 {role === "admin" && (
                   <>
                     <div className="space-y-2">
@@ -182,11 +244,15 @@ const Auth = () => {
                   <Label htmlFor="signup-password">Password</Label>
                   <Input id="signup-password" type="password" required />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">Confirm Password</Label>
                   <Input id="confirm-password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full">Create Account</Button>
+
+                <Button type="submit" className="w-full">
+                  Create Account
+                </Button>
               </form>
             </TabsContent>
           </Tabs>

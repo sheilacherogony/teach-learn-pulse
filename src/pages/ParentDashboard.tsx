@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, User, TrendingUp, LogOut, FileText } from "lucide-react";
+import { FileText, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
-  const [children, setChildren] = useState<any[]>([]);
+  const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +19,9 @@ const ParentDashboard = () => {
     try {
       const response = await fetch("http://localhost:5000/children");
       const data = await response.json();
-      setChildren(data.filter((child: any) => child.parentId === "parent1"));
+      // Filter by parentId
+      const parentChildren = data.filter((child) => child.parentId === "parent1");
+      setChildren(parentChildren);
     } catch (error) {
       toast.error("Failed to load children data");
     } finally {
@@ -29,72 +30,99 @@ const ParentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-light via-background to-secondary-light p-4 md:p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-indigo-900 p-4 md:p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-4 flex-1">
-            <Button variant="default" className="gap-2">
+            <Button variant="default" className="gap-2 bg-indigo-700 hover:bg-indigo-800">
               <FileText className="h-4 w-4" />
               View Reports
             </Button>
             <div className="flex-1">
-              <h2 className="text-foreground text-2xl font-bold">Parent Dashboard</h2>
-              <p className="text-muted-foreground text-sm">Track your child's progress</p>
+              <h2 className="text-white text-2xl font-bold">Parent Dashboard</h2>
+              <p className="text-white/70 text-sm">Track your child’s progress</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => navigate("/")}>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/")}
+            className="border-gray-400 text-gray-200 hover:bg-gray-800"
+          >
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
         </div>
 
-        {/* Children List */}
+        {/* Children Data Section */}
         {loading ? (
-          <Card className="shadow-medium">
+          <Card className="shadow-md bg-slate-800 text-gray-200">
             <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">Loading children data...</p>
+              <p className="text-center text-gray-400">Loading children data...</p>
+            </CardContent>
+          </Card>
+        ) : children.length === 0 ? (
+          <Card className="shadow-md bg-slate-800 text-gray-200">
+            <CardContent className="pt-6">
+              <p className="text-center text-gray-400">
+                No child records found for this parent.
+              </p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-6">
             {children.map((child) => (
-              <Card key={child.id} className="shadow-medium">
+              <Card key={child.id} className="shadow-lg bg-slate-800/90 border border-slate-700">
                 <CardHeader>
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <CardTitle className="text-2xl">{child.name}</CardTitle>
-                      <p className="text-muted-foreground">
+                      <CardTitle className="text-2xl text-white">{child.name}</CardTitle>
+                      <p className="text-gray-400">
                         {child.class} • Admission #: {child.admissionNumber}
                       </p>
                     </div>
-                    <Badge variant="secondary" className="bg-success/20 text-success-foreground w-fit">
+                    <Badge
+                      variant="secondary"
+                      className="bg-green-600/20 text-green-400 border border-green-600"
+                    >
                       Overall Progress: {child.progress}%
                     </Badge>
                   </div>
                 </CardHeader>
+
                 <CardContent>
                   <div className="space-y-4">
-                    {child.subjects.map((subject: any) => (
-                      <Card key={subject.subject} className="shadow-soft">
-                        <CardContent className="pt-6">
-                          <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                              <div>
-                                <h3 className="font-semibold text-lg">{subject.subject}</h3>
-                                <p className="text-sm text-muted-foreground">Teacher: {subject.teacher}</p>
-                              </div>
-                              <Badge variant="secondary" className="bg-accent/20 text-accent-foreground w-fit">
-                                {subject.progress}% Complete
-                              </Badge>
-                            </div>
-                            <div className="space-y-1">
-                              <p className="text-sm font-medium">Latest Lesson:</p>
-                              <p className="text-sm text-muted-foreground">{subject.lastLesson}</p>
-                            </div>
+                    {child.subjects.map((subject) => (
+                      <div
+                        key={subject.subject}
+                        className="bg-slate-700/50 p-4 rounded-xl border border-slate-600"
+                      >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                          <div>
+                            <h3 className="font-semibold text-lg text-white">
+                              {subject.subject}
+                            </h3>
+                            <p className="text-sm text-gray-400">
+                              Teacher: {subject.teacher}
+                            </p>
                           </div>
-                        </CardContent>
-                      </Card>
+                          <Badge
+                            variant="secondary"
+                            className="bg-blue-600/20 text-blue-400 border border-blue-600"
+                          >
+                            {subject.progress}% Complete
+                          </Badge>
+                        </div>
+
+                        <div className="mt-3">
+                          <p className="text-sm font-medium text-gray-300">
+                            Latest Lesson:
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {subject.lastLesson}
+                          </p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </CardContent>
@@ -102,7 +130,6 @@ const ParentDashboard = () => {
             ))}
           </div>
         )}
-
       </div>
     </div>
   );

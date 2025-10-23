@@ -82,7 +82,7 @@
       "attendance": 92,
       "lessons": 30,
       "streak": 15,
-      "flagged": false
+      "flagged": true
     },
     {
       "id": "3",
@@ -92,7 +92,7 @@
       "attendance": 88,
       "lessons": 26,
       "streak": 8,
-      "flagged": false
+      "flagged": true
     },
     {
       "id": "4",
@@ -102,8 +102,16 @@
       "attendance": 97,
       "lessons": 32,
       "streak": 18,
-      "flagged": false
+      "flagged": true
     }
   ],
-  "warnings": []
+  "warnings": [
+    {
+      "id": "a373",
+      "teacherId": "1",
+      "teacherName": "Wachira Maina",
+      "message": "i warn u",
+      "date": "2025-10-23T22:03:20.485Z"
+    }
+  ]
 }
