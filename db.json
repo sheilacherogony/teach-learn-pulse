@@ -10,31 +10,31 @@
       "subjects": [
         {
           "subject": "Mathematics",
-          "teacher": "Jane Wanjiku",
+          "teacher": "Wanjiku Kimani",
           "lastLesson": "Quadratic Equations",
           "progress": 85
         },
         {
           "subject": "Physics",
-          "teacher": "John Kamau",
+          "teacher": "Wachira Maina",
           "lastLesson": "Newton's Laws",
           "progress": 78
         },
         {
           "subject": "Chemistry",
-          "teacher": "John Kamau",
+          "teacher": "Wachira Maina",
           "lastLesson": "Chemical Bonding",
           "progress": 82
         },
         {
           "subject": "English",
-          "teacher": "Michael Mwangi",
+          "teacher": "Mwangi Otieno",
           "lastLesson": "Poetry Analysis",
           "progress": 90
         },
         {
           "subject": "History",
-          "teacher": "Sarah Njeri",
+          "teacher": "Njeri Wambui",
           "lastLesson": "World War II",
           "progress": 88
         }
@@ -50,13 +50,13 @@
       "subjects": [
         {
           "subject": "Mathematics",
-          "teacher": "Jane Wanjiku",
+          "teacher": "Wanjiku Kimani",
           "lastLesson": "Linear Equations",
           "progress": 75
         },
         {
           "subject": "Biology",
-          "teacher": "Grace Akinyi",
+          "teacher": "Akinyi Odhiambo",
           "lastLesson": "Cell Structure",
           "progress": 80
         }
@@ -66,7 +66,7 @@
   "teachers": [
     {
       "id": "1",
-      "name": "John Kamau",
+      "name": "Wachira Maina",
       "tscNumber": "TSC-123456",
       "department": "Science",
       "attendance": 95,
@@ -76,7 +76,7 @@
     },
     {
       "id": "2",
-      "name": "Jane Wanjiku",
+      "name": "Wanjiku Kimani",
       "tscNumber": "TSC-234567",
       "department": "Mathematics",
       "attendance": 92,
@@ -86,7 +86,7 @@
     },
     {
       "id": "3",
-      "name": "Michael Mwangi",
+      "name": "Mwangi Otieno",
       "tscNumber": "TSC-345678",
       "department": "Languages",
       "attendance": 88,
@@ -96,7 +96,7 @@
     },
     {
       "id": "4",
-      "name": "Sarah Njeri",
+      "name": "Njeri Wambui",
       "tscNumber": "TSC-456789",
       "department": "Humanities",
       "attendance": 97,
