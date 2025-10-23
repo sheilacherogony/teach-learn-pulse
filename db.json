@@ -1,0 +1,109 @@
+{
+  "children": [
+    {
+      "id": "1",
+      "name": "Achieng Omondi",
+      "admissionNumber": "2024-0156",
+      "parentId": "parent1",
+      "class": "Form 3A",
+      "progress": 85,
+      "subjects": [
+        {
+          "subject": "Mathematics",
+          "teacher": "Jane Wanjiku",
+          "lastLesson": "Quadratic Equations",
+          "progress": 85
+        },
+        {
+          "subject": "Physics",
+          "teacher": "John Kamau",
+          "lastLesson": "Newton's Laws",
+          "progress": 78
+        },
+        {
+          "subject": "Chemistry",
+          "teacher": "John Kamau",
+          "lastLesson": "Chemical Bonding",
+          "progress": 82
+        },
+        {
+          "subject": "English",
+          "teacher": "Michael Mwangi",
+          "lastLesson": "Poetry Analysis",
+          "progress": 90
+        },
+        {
+          "subject": "History",
+          "teacher": "Sarah Njeri",
+          "lastLesson": "World War II",
+          "progress": 88
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Kipchoge Mutua",
+      "admissionNumber": "2024-0157",
+      "parentId": "parent1",
+      "class": "Form 2B",
+      "progress": 78,
+      "subjects": [
+        {
+          "subject": "Mathematics",
+          "teacher": "Jane Wanjiku",
+          "lastLesson": "Linear Equations",
+          "progress": 75
+        },
+        {
+          "subject": "Biology",
+          "teacher": "Grace Akinyi",
+          "lastLesson": "Cell Structure",
+          "progress": 80
+        }
+      ]
+    }
+  ],
+  "teachers": [
+    {
+      "id": "1",
+      "name": "John Kamau",
+      "tscNumber": "TSC-123456",
+      "department": "Science",
+      "attendance": 95,
+      "lessons": 28,
+      "streak": 12,
+      "flagged": false
+    },
+    {
+      "id": "2",
+      "name": "Jane Wanjiku",
+      "tscNumber": "TSC-234567",
+      "department": "Mathematics",
+      "attendance": 92,
+      "lessons": 30,
+      "streak": 15,
+      "flagged": false
+    },
+    {
+      "id": "3",
+      "name": "Michael Mwangi",
+      "tscNumber": "TSC-345678",
+      "department": "Languages",
+      "attendance": 88,
+      "lessons": 26,
+      "streak": 8,
+      "flagged": false
+    },
+    {
+      "id": "4",
+      "name": "Sarah Njeri",
+      "tscNumber": "TSC-456789",
+      "department": "Humanities",
+      "attendance": 97,
+      "lessons": 32,
+      "streak": 18,
+      "flagged": false
+    }
+  ],
+  "warnings": []
+}

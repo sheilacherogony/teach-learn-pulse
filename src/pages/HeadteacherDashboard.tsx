@@ -1,20 +1,64 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Users, BookOpen, TrendingUp, Send, LogOut } from "lucide-react";
+import { Users, BookOpen, TrendingUp, Send, LogOut, AlertTriangle, Flag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import WarningModal from "@/components/WarningModal";
 
 const HeadteacherDashboard = () => {
   const navigate = useNavigate();
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTeacher, setSelectedTeacher] = useState<{ id: string; name: string } | null>(null);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
 
-  const teachers = [
-    { name: "John Doe", department: "Science", attendance: 95, lessons: 28, streak: 12 },
-    { name: "Jane Smith", department: "Mathematics", attendance: 92, lessons: 30, streak: 15 },
-    { name: "Michael Brown", department: "Languages", attendance: 88, lessons: 26, streak: 8 },
-    { name: "Sarah Wilson", department: "Humanities", attendance: 97, lessons: 32, streak: 18 },
-  ];
+  useEffect(() => {
+    fetchTeachers();
+  }, []);
+
+  const fetchTeachers = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/teachers");
+      const data = await response.json();
+      setTeachers(data);
+    } catch (error) {
+      toast.error("Failed to load teachers data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendWarning = (teacherId: string, teacherName: string) => {
+    setSelectedTeacher({ id: teacherId, name: teacherName });
+    setIsWarningModalOpen(true);
+  };
+
+  const handleFlagTeacher = async (teacherId: string) => {
+    try {
+      const teacher = teachers.find((t) => t.id === teacherId);
+      const response = await fetch(`http://localhost:5000/teachers/${teacherId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          flagged: !teacher.flagged,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(teacher.flagged ? "Teacher unflagged" : "Teacher flagged");
+        fetchTeachers();
+      } else {
+        toast.error("Failed to update teacher status");
+      }
+    } catch (error) {
+      toast.error("Error connecting to server");
+    }
+  };
 
   const performanceMetrics = [
     { label: "Professional Knowledge", score: 87 },
@@ -121,42 +165,87 @@ const HeadteacherDashboard = () => {
             <CardTitle>Teacher Performance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {teachers.map((teacher) => (
-                <Card key={teacher.name} className="shadow-soft">
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="space-y-1">
-                        <h3 className="font-semibold text-lg">{teacher.name}</h3>
-                        <p className="text-sm text-muted-foreground">{teacher.department}</p>
+            {loading ? (
+              <p className="text-center text-muted-foreground">Loading teachers data...</p>
+            ) : (
+              <div className="space-y-4">
+                {teachers.map((teacher) => (
+                  <Card key={teacher.id} className="shadow-soft">
+                    <CardContent className="pt-6">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="space-y-1 flex items-center gap-2">
+                            <div>
+                              <h3 className="font-semibold text-lg flex items-center gap-2">
+                                {teacher.name}
+                                {teacher.flagged && (
+                                  <Flag className="h-5 w-5 text-destructive fill-destructive" />
+                                )}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">{teacher.department}</p>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-4">
+                            <div className="text-center">
+                              <p className="text-xs text-muted-foreground">Attendance</p>
+                              <Badge variant="secondary" className="mt-1 bg-success/20 text-success-foreground">
+                                {teacher.attendance}%
+                              </Badge>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-xs text-muted-foreground">Lessons</p>
+                              <Badge variant="secondary" className="mt-1 bg-accent/20 text-accent-foreground">
+                                {teacher.lessons}
+                              </Badge>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-xs text-muted-foreground">Streak</p>
+                              <Badge variant="secondary" className="mt-1 bg-primary/20 text-primary-foreground">
+                                {teacher.streak} days
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSendWarning(teacher.id, teacher.name)}
+                            className="gap-2"
+                          >
+                            <AlertTriangle className="h-4 w-4" />
+                            Send Warning Message
+                          </Button>
+                          <Button
+                            variant={teacher.flagged ? "destructive" : "outline"}
+                            size="sm"
+                            onClick={() => handleFlagTeacher(teacher.id)}
+                            className="gap-2"
+                          >
+                            <Flag className="h-4 w-4" />
+                            {teacher.flagged ? "Unflag Teacher" : "Flag Teacher"}
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-4">
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">Attendance</p>
-                          <Badge variant="secondary" className="mt-1 bg-success/20 text-success-foreground">
-                            {teacher.attendance}%
-                          </Badge>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">Lessons</p>
-                          <Badge variant="secondary" className="mt-1 bg-accent/20 text-accent-foreground">
-                            {teacher.lessons}
-                          </Badge>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">Streak</p>
-                          <Badge variant="secondary" className="mt-1 bg-primary/20 text-primary-foreground">
-                            {teacher.streak} days
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {selectedTeacher && (
+          <WarningModal
+            isOpen={isWarningModalOpen}
+            onClose={() => {
+              setIsWarningModalOpen(false);
+              setSelectedTeacher(null);
+            }}
+            teacherName={selectedTeacher.name}
+            teacherId={selectedTeacher.id}
+          />
+        )}
       </div>
     </div>
   );
