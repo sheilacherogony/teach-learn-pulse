@@ -72,7 +72,7 @@
       "attendance": 95,
       "lessons": 28,
       "streak": 12,
-      "flagged": true
+      "flagged": false
     },
     {
       "id": "2",
@@ -82,7 +82,7 @@
       "attendance": 92,
       "lessons": 30,
       "streak": 15,
-      "flagged": true
+      "flagged": false
     },
     {
       "id": "3",
@@ -92,20 +92,26 @@
       "attendance": 88,
       "lessons": 26,
       "streak": 8,
-      "flagged": true
+      "flagged": false
     },
     {
       "id": "4",
       "name": "Njeri Wambui",
       "tscNumber": "TSC-456789",
       "department": "Humanities",
-      "attendance": 97,
+      "attendance": 6,
       "lessons": 32,
-      "streak": 18,
+      "streak": 1,
       "flagged": true
     }
   ],
   "warnings": [
-    
+    {
+      "id": "3630",
+      "teacherId": "1",
+      "teacherName": "Wachira Maina",
+      "message": "you are warned",
+      "date": "2025-10-24"
+    }
   ]
 }

@@ -163,7 +163,7 @@ const TeacherDashboard = () => {
               messages.map((msg) => (
                 <Card key={msg.id} className="mb-2 bg-warning/10 border-warning/30">
                   <CardContent>
-                    <p>{msg.text}</p>
+                    <p>{msg.message}</p>
                     <p className="text-xs text-muted-foreground">{msg.date}</p>
                   </CardContent>
                 </Card>

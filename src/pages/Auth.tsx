@@ -27,6 +27,11 @@ const Auth = () => {
   const [tscNumber, setTscNumber] = useState("");
   const [password, setPassword] = useState("");
 
+  // Parent children state
+  const [children, setChildren] = useState([
+    { name: "", admissionNumber: "" },
+  ]);
+
   const handleSignIn = (e) => {
     e.preventDefault();
 
@@ -47,10 +52,33 @@ const Auth = () => {
 
   const handleSignUp = (e) => {
     e.preventDefault();
+
+    if (role === "parent") {
+      const emptyChild = children.find(
+        (c) => c.name.trim() === "" || c.admissionNumber.trim() === ""
+      );
+      if (emptyChild) {
+        toast.error("Please fill all child name and admission number fields");
+        return;
+      }
+    }
+
     toast.success("Account created successfully!");
     if (role === "teacher") navigate("/teacher");
     else if (role === "parent") navigate("/parent");
     else if (role === "admin") navigate("/headteacher");
+  };
+
+  // Add another child input
+  const addChild = () => {
+    setChildren([...children, { name: "", admissionNumber: "" }]);
+  };
+
+  // Update child input
+  const handleChildChange = (index, field, value) => {
+    const newChildren = [...children];
+    newChildren[index][field] = value;
+    setChildren(newChildren);
   };
 
   return (
@@ -168,6 +196,36 @@ const Auth = () => {
                       <Label htmlFor="parent-email">Email</Label>
                       <Input id="parent-email" type="email" required />
                     </div>
+
+                    {/* Children Inputs */}
+                    {children.map((child, index) => (
+                      <div key={index} className="space-y-2 border p-2 rounded">
+                        <Label>Child {index + 1}</Label>
+                        <Input
+                          placeholder="Child Name"
+                          value={child.name}
+                          onChange={(e) =>
+                            handleChildChange(index, "name", e.target.value)
+                          }
+                          required
+                        />
+                        <Input
+                          placeholder="Admission Number"
+                          value={child.admissionNumber}
+                          onChange={(e) =>
+                            handleChildChange(index, "admissionNumber", e.target.value)
+                          }
+                          required
+                        />
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={addChild}
+                    >
+                      + Add another child
+                    </Button>
                   </>
                 )}
 
