@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,36 +18,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, CheckCircle2 } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState("teacher");
-  const [teachers, setTeachers] = useState([]);
-  const [teacherDetails, setTeacherDetails] = useState({
-    tscNumber: "",
-    firstName: "",
-    lastName: "",
-  });
-  const [tscAutoFilled, setTscAutoFilled] = useState(false);
-
-  useEffect(() => {
-    // Fetch mock teacher data from db.json
-    const fetchTeachers = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/teachers");
-        const data = await res.json();
-        setTeachers(data);
-      } catch (err) {
-        toast.error("Failed to load teacher data");
-      }
-    };
-    fetchTeachers();
-  }, []);
+  const [tscNumber, setTscNumber] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSignIn = (e) => {
     e.preventDefault();
+
+    if (role === "teacher" && !tscNumber) {
+      toast.error("Please enter your TSC number");
+      return;
+    }
+    if (!password) {
+      toast.error("Please enter your password");
+      return;
+    }
+
     toast.success("Signed in successfully!");
     if (role === "teacher") navigate("/teacher");
     else if (role === "parent") navigate("/parent");
@@ -62,32 +53,6 @@ const Auth = () => {
     else if (role === "admin") navigate("/headteacher");
   };
 
-  const handleTscNumberChange = (e) => {
-    const value = e.target.value;
-    setTeacherDetails((prev) => ({ ...prev, tscNumber: value }));
-
-    // Find teacher in the mock DB
-    const foundTeacher = teachers.find(
-      (t) => t.tscNumber.toLowerCase() === value.toLowerCase()
-    );
-
-    if (foundTeacher) {
-      // Split teacher's name into first and last for display
-      const [firstName, ...rest] = foundTeacher.name.split(" ");
-      const lastName = rest.join(" ");
-      setTeacherDetails({
-        tscNumber: foundTeacher.tscNumber,
-        firstName,
-        lastName,
-      });
-      setTscAutoFilled(true);
-      toast.success(`Details auto-filled for ${foundTeacher.name}`);
-    } else {
-      setTscAutoFilled(false);
-      setTeacherDetails({ tscNumber: value, firstName: "", lastName: "" });
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-light via-secondary-light to-accent-light p-4">
       <Card className="w-full max-w-md shadow-large">
@@ -98,9 +63,7 @@ const Auth = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">EduTrack</CardTitle>
-          <CardDescription>
-            School Monitoring & Progress System
-          </CardDescription>
+          <CardDescription>School Monitoring & Progress System</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -127,14 +90,34 @@ const Auth = () => {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" required />
-                </div>
+                {role === "teacher" ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="tsc">TSC Number</Label>
+                    <Input
+                      id="tsc"
+                      type="text"
+                      placeholder="TSC-123456"
+                      value={tscNumber}
+                      onChange={(e) => setTscNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" required />
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" required />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
 
                 <Button type="submit" className="w-full">
@@ -160,51 +143,17 @@ const Auth = () => {
                   </Select>
                 </div>
 
-                {/* --- Teacher Signup Section --- */}
+                {/* Teacher Signup */}
                 {role === "teacher" && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="tsc">TSC Number</Label>
-                      <div className="relative">
-                        <Input
-                          id="tsc"
-                          type="text"
-                          placeholder="TSC-123456"
-                          value={teacherDetails.tscNumber}
-                          onChange={handleTscNumberChange}
-                          required
-                        />
-                        {tscAutoFilled && (
-                          <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-success" />
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="first-name">First Name</Label>
-                      <Input
-                        id="first-name"
-                        type="text"
-                        value={teacherDetails.firstName}
-                        disabled={tscAutoFilled}
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="last-name">Last Name</Label>
-                      <Input
-                        id="last-name"
-                        type="text"
-                        value={teacherDetails.lastName}
-                        disabled={tscAutoFilled}
-                        required
-                      />
-                    </div>
-                  </>
+                  <div className="space-y-2">
+                    <Label htmlFor="tsc">TSC Number</Label>
+                    <Input id="tsc" type="text" placeholder="TSC-123456" required />
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" type="password" required />
+                  </div>
                 )}
 
-                {/* --- Parent Signup Section --- */}
+                {/* Parent Signup */}
                 {role === "parent" && (
                   <>
                     <div className="space-y-2">
@@ -219,14 +168,10 @@ const Auth = () => {
                       <Label htmlFor="parent-email">Email</Label>
                       <Input id="parent-email" type="email" required />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="admission">Student Admission Number</Label>
-                      <Input id="admission" type="text" required />
-                    </div>
                   </>
                 )}
 
-                {/* --- Admin Signup Section --- */}
+                {/* Admin Signup */}
                 {role === "admin" && (
                   <>
                     <div className="space-y-2">
@@ -243,11 +188,6 @@ const Auth = () => {
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
                   <Input id="signup-password" type="password" required />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input id="confirm-password" type="password" required />
                 </div>
 
                 <Button type="submit" className="w-full">

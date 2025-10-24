@@ -72,7 +72,7 @@
       "attendance": 95,
       "lessons": 28,
       "streak": 12,
-      "flagged": false
+      "flagged": true
     },
     {
       "id": "2",
@@ -112,6 +112,13 @@
       "teacherName": "Wachira Maina",
       "message": "i warn u",
       "date": "2025-10-23T22:03:20.485Z"
+    },
+    {
+      "id": "2b38",
+      "teacherId": "1",
+      "teacherName": "Wachira Maina",
+      "message": "you are warned",
+      "date": "2025-10-23T23:46:14.271Z"
     }
   ]
 }
