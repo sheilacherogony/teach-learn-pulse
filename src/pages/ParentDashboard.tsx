@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,22 +11,63 @@ const ParentDashboard = () => {
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchChildren();
-  }, []);
-
-  const fetchChildren = async () => {
+  // --- INTEGRATION POINT 2: Get admission numbers from session ---
+  const getChildrenAdmissions = () => {
     try {
-      const response = await fetch("http://localhost:5000/children");
+        const admissions = localStorage.getItem("childrenAdmissions");
+        if (admissions) {
+            // Returns an array of admission numbers like ["2024-0156", "2024-0157"]
+            return JSON.parse(admissions);
+        }
+    } catch (error) {
+        console.error("Error parsing childrenAdmissions from localStorage:", error);
+    }
+    return [];
+  };
+  // -------------------------------------------------------------
+
+  const fetchChildren = useCallback(async () => {
+    const parentChildrenAdmissions = getChildrenAdmissions();
+
+    if (parentChildrenAdmissions.length === 0) {
+        setChildren([]);
+        setLoading(false);
+        return;
+    }
+    
+    try {
+      const response = await fetch("http://localhost:5000/children"); // Mock API endpoint
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
       const data = await response.json();
-      // Filter by parentId
-      const parentChildren = data.filter((child) => child.parentId === "parent1");
+      
+      // --- INTEGRATION POINT 3: Filter by Admission Number ---
+      // Filter the children whose admission number is in the parent's list
+      const parentChildren = data.filter((child) => 
+        parentChildrenAdmissions.includes(child.admissionNumber)
+      );
+      // ------------------------------------------------------
+      
       setChildren(parentChildren);
     } catch (error) {
-      toast.error("Failed to load children data");
+      console.error(error);
+      toast.error("Failed to load children data. Check if your JSON server is running.");
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchChildren();
+  }, [fetchChildren]); // Depend on fetchChildren to avoid stale closure (though it's memoized)
+
+  const handleSignOut = () => {
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("childrenAdmissions");
+    toast.info("Signed out successfully.");
+    navigate("/");
   };
 
   return (
@@ -46,7 +87,7 @@ const ParentDashboard = () => {
           </div>
           <Button
             variant="outline"
-            onClick={() => navigate("/")}
+            onClick={handleSignOut} // Use the new sign-out function
             className="border-gray-400 text-gray-200 hover:bg-gray-800"
           >
             <LogOut className="h-4 w-4 mr-2" />
@@ -65,7 +106,7 @@ const ParentDashboard = () => {
           <Card className="shadow-md bg-slate-800 text-gray-200">
             <CardContent className="pt-6">
               <p className="text-center text-gray-400">
-                No child records found for this parent.
+                No progress records found for the registered children. Please ensure the Admission Numbers are correct.
               </p>
             </CardContent>
           </Card>

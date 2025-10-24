@@ -4,7 +4,7 @@
       "id": "1",
       "name": "Achieng Omondi",
       "admissionNumber": "2024-0156",
-      "parentId": "parent1",
+      "parentId": "parent1", 
       "class": "Form 3A",
       "progress": 85,
       "subjects": [
@@ -44,7 +44,7 @@
       "id": "2",
       "name": "Kipchoge Mutua",
       "admissionNumber": "2024-0157",
-      "parentId": "parent1",
+      "parentId": "parent1", 
       "class": "Form 2B",
       "progress": 78,
       "subjects": [
